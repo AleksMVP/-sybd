@@ -25,7 +25,9 @@ CREATE TABLE forums (
     FOREIGN KEY (nickname) REFERENCES users (nickname) 
 );
 
+/*1*/
 CREATE INDEX IF NOT EXISTS forums_index_slug ON forums (slug);
+/*CREATE INDEX IF NOT EXISTS forums_index_nickname ON forums (nickname);*/
 
 CREATE TABLE threads (
     author CITEXT NOT NULL,
@@ -43,7 +45,10 @@ CREATE TABLE threads (
 CREATE INDEX IF NOT EXISTS threads_index_id ON threads (id);
 CREATE INDEX IF NOT EXISTS threads_index_slug ON threads (slug);
 CREATE INDEX IF NOT EXISTS threads_index_forum ON threads (forum);
-/*CREATE INDEX IF NOT EXISTS threads_index_forum_create_date ON threads (forum, create_date);*/
+
+/*CREATE INDEX threads_index_author ON threads (author);*/
+CREATE INDEX IF NOT EXISTS threads_index_forum_create_date ON threads (forum, create_date);
+CREATE INDEX IF NOT EXISTS threads_index_create_date ON threads (create_date);
 
 CREATE TABLE posts (
     author CITEXT NOT NULL,
@@ -68,6 +73,11 @@ CREATE INDEX IF NOT EXISTS posts_index_thread_parent_id ON posts (thread, (path[
 CREATE INDEX IF NOT EXISTS posts_index_thread_path ON posts (thread, path);
 CREATE INDEX IF NOT EXISTS posts_index_thread_id_main ON posts (thread, id) WHERE parent = 0;
 
+CREATE INDEX posts_index_thread_array_length ON posts (thread, (array_length(path, 1)));
+CREATE INDEX posts_index_thread_array_length_path ON posts (thread, (array_length(path, 1)), (path[1]));
+/*CREATE INDEX IF NOT EXISTS posts_index_parent ON posts ((path[1]));
+CREATE INDEX IF NOT EXISTS posts_index_thread_created ON posts (thread, create_date);*/
+
 CREATE TABLE votes (
   thread INT NOT NULL,
   voice INT NOT NULL,
@@ -79,6 +89,9 @@ CREATE TABLE votes (
 
 CREATE UNIQUE INDEX IF NOT EXISTS votex_index_thread_nickname ON votes (thread, nickname);
 
+/*CREATE INDEX IF NOT EXISTS vote_index_thread ON votes (thread);
+CREATE INDEX IF NOT EXISTS vote_index_nickname ON votes (nickname);*/
+
 CREATE TABLE forum_users (
     forum CITEXT NOT NULL,
     nickname CITEXT NOT NULL,
@@ -89,7 +102,7 @@ CREATE TABLE forum_users (
 
 
 CREATE INDEX IF NOT EXISTS forum_users_index_forum ON forum_users (forum);
-/* CREATE INDEX IF NOT EXISTS forums_users_index_nickname ON forum_users (nickname);*/
+CREATE INDEX IF NOT EXISTS forums_users_index_nickname ON forum_users (nickname);
 CREATE INDEX IF NOT EXISTS forums_users_index_forum_nickname ON forum_users (forum, nickname);
 
 

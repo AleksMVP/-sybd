@@ -109,7 +109,7 @@ func (h *ThreadRepository)GetThread(slugOrId string) (t models.Thread, e error) 
 	return t, err
 }
 
-func (h *ThreadRepository)GetThreads(slug string, limit string, since string, desc string) (ts models.Threads, e error) {
+func (h *ThreadRepository)GetThreads(slug, limit, since, desc string) (ts models.Threads, e error) {
 	ts = make(models.Threads, 0)
 	var sort string
 	if desc == "ASC" {
@@ -148,6 +148,7 @@ func (h *ThreadRepository)GetThreads(slug string, limit string, since string, de
 		return ts, err
 	}
 
+	i := 0
 	for rows.Next() {
 		t := models.Thread{}
 		err = rows.Scan(
@@ -162,10 +163,11 @@ func (h *ThreadRepository)GetThreads(slug string, limit string, since string, de
 		)
 
 		ts = append(ts, &t)
+		i++
 	}
 	rows.Close()
 
-	if len(ts) == 0 {
+	if i == 0 {
 		return ts, errors.ErrForumNotFound
 	}
 
